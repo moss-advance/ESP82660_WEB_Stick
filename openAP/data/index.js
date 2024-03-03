@@ -32,11 +32,7 @@ var app = new Vue({
 			Map: {
 				0: "文件传输中",
 				1: "文件传输失败",
-				2: "文件解析中",
-				3: "文件解析失败",
-				4: "展示中",
-				5: "展示完毕",
-				6: "展示失败"
+				2: "文件传输成功"
 			}
 		},
 		filesize: 0,
@@ -74,9 +70,7 @@ var app = new Vue({
 					}
 					switch (s) { //失败或完成后关闭
 						case 1:
-						case 3:
-						case 5:
-						case 6: {
+						case 2:{
 							setTimeout(() => {
 								app.closeAlert();
 							}, 1000);
@@ -113,7 +107,6 @@ var app = new Vue({
 		// 启动单片机绘制图案
 		draw: function() {
 			msg = '开始绘制'
-			this.showAlert();
 			axios.get("/draw")
 		},
 		// 弹窗部分
