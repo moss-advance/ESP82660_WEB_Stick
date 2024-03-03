@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+</head>
+<link rel="stylesheet" href="index.css" />
+
+<body>
+	<div id="app">
+		
+		<div class="flex" id="modeboxs">
+			<p class="status">当前模式为<span id="mode">{{forms[checked].t}}</span><span class='msg'
+					:title="msg">{{msg}}</span></p>
+			<div class="types">
+				<h4>{{forms.f1.t}}</h4>
+				<input class="switch-button" type="radio" name="fake" :value="forms.f1.v" v-model='checked'>
+				<input type="color" v-model="forms.f1.c" @change="colorchange('f1')" />
+			</div>
+			<div class="types">
+				<h4>{{forms.f2.t}}</h4>
+				<input class="switch-button" type="radio" name="fake" :value="forms.f2.v" v-model='checked'>
+				开始颜色
+				<input type="color" v-model='forms.f2.c1' @change="colorchange('f2')" />
+				结束颜色
+				<input type="color" v-model='forms.f2.c2' @change="colorchange('f2')" />
+			</div>
+			<div class="types">
+				<h4>{{forms.f3.t}}</h4>
+				<input class="switch-button" type="radio" name="fake" :value="forms.f3.v" v-model='checked'>
+				<input type="color" v-model='forms.f3.c'  @change="colorchange('f3')" />
+				<div class="button" @click="knock('f3')">点击发射</div>
+			</div>
+			<div class="types" id="uploadForm">
+				<h4>{{forms.f4.t}}</h4>
+				<input class="switch-button" type="radio" name="fake" :value="forms.f4.v" v-model='checked'>
+				<input type="file" accept="image/*" @change="handleFile($event)">
+				处理后图片展示
+				<canvas id="outputCanvas" width="144">你的浏览器居然不支持Canvas？！赶快换一个吧！！</canvas>
+				<span>文件大小为:{{filesize}}/Kbit</span>
+				<hr width="100%">
+				上传成功后，是否开始绘制
+				<div class="button" @click="draw">开始</div>
+			</div>
+			<div class="types">
+				<h4>全局颜色控制</h4>{{B}}
+				<input type="range" step="1" min="0" max="255" v-model="B" @change="BControl" />
+			</div>
+		</div>
+		<div class="button" @click="saveConfig">点击保存配置</div>
+		<div class="button" @click="showImg">显示上传图</div>
+		<div id="particles-js">
+			<canvas class="particles-js-canvas-el"></canvas>
+		</div>
+		<div class="modal" v-show="showModal">
+		    <div class="modal-content">
+		      <!-- <span class="close" @click="closeAlert">&times;</span> -->
+		      <div class="modal-text">
+		        <p>{{Stick.Map[Stick.Status]}}</p>
+		      </div>
+		    </div>
+		  </div>
+	</div>
+	<script id="lizi"></script>
+
+</body>
+<script src="vue.js"></script>
+<script src="axios.min.js"></script>
+<script src="canvastobmp.min.js"></script>
+<script src="index.js"></script>
+</html>

@@ -1,0 +1,194 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background-image: linear-gradient(to right, #ebbba7 0%, #cfc7f8 100%);
+}
+
+#app {
+	position: relative;
+}
+
+.status {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	height: 50px;
+	background-color: orange;
+	text-align: center;
+	line-height: 50px;
+	color: white;
+	font-size: 20px;
+}
+
+.flex {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	margin-top: 60px;
+}
+
+.msg {
+	white-space: nowrap;
+	background-color: red;
+	position: fixed;
+	right: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 200px;
+}
+
+.button {
+	background-color: #1795bb;
+	border-radius: 12px;
+	border: none;
+	color: white;
+	padding: 16px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: flex;
+	font-size: 16px;
+	margin: 4px 2px;
+	-webkit-transition-duration: 0.4s;
+	transition-duration: 0.4s;
+	cursor: pointer;
+}
+
+.button:hover {
+	background-color: #fff;
+	color: #1795bb;
+	border: 1px solid #ccc;
+}
+
+.types {
+	background-color: rgba(255, 0, 0, .2);
+	border-radius: 9px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: calc((100% / 3) - 50px);
+	margin: 30px 20px;
+	padding: 1% 0;
+}
+
+.types>input {
+	margin: 5px;
+}
+
+@media (max-width: 1400px) {
+	.types {
+		width: calc(50% - 50px);
+	}
+}
+
+@media (max-width: 1200px) {
+	.types {
+		width: calc(100% - 50px);
+	}
+}
+
+.switch-button {
+	position: relative;
+	width: 80px;
+	height: 40px;
+	border-radius: 20px;
+	appearance: none;
+	background-color: unset;
+	outline: none;
+	box-shadow: inset 0 0 5px rgba(0, 0, 0, .2);
+	transition: .5s;
+}
+
+.switch-button:checked {
+	background-color: #03a9f4;
+}
+
+.switch-button::before {
+	content: '';
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	inset: 0;
+	background-color: #fff;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
+	transition: .5s;
+}
+
+.switch-button:checked:before {
+	left: 40px;
+}
+
+.particles-js-canvas-el {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+}
+
+/* 弹窗 */
+#popDiv {
+	display: none;
+	background-color: crimson;
+	z-index: 11;
+	width: 600px;
+	height: 600px;
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	margin: auto;
+}
+
+/* 弹窗样式 */
+.modal {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgba(0 0, 0, 0.4);
+}
+
+.modal-content {
+	position: fixed;
+	display: flex;
+	top:50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 75%;
+	height: 55%;
+	border-radius: 2vmin;
+	padding: 1% 2% ;
+	background-color: white;
+	border: 1px solid #888;
+	color: #000;
+	align-items: center;
+}
+
+.close {
+	position: absolute;
+	top: 1%;
+	right: 2%;
+	color: #aaaaaa;
+	font-size: 7vmin;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.modal-text { 
+	width: 100%;
+	text-align: center;
+	font-size: 8vmin;
+	font-family: "Microsoft YaHei", "微软雅黑", SimSun, 宋体, STSong, "华文宋体", STHeiti, "华文黑体", sans-serif;
+}
+
+.close:hover {
+	color: #000;
+}
