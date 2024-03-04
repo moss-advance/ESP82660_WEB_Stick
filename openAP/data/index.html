@@ -34,13 +34,13 @@
 			</div>
 			<div class="types" id="uploadForm">
 				<h4>{{forms.f4.t}}</h4>
-				<input class="switch-button" type="radio" name="fake" :value="forms.f4.v" v-model='checked'>
+				<input class="switch-button" type="checkbox" name="fake" @click="Stick.isRote = !Stick.isRote" :value="Stick.isRote" v-model='Stick.isRote'>
 				<input type="file" accept="image/*" @change="handleFile($event)">
 				处理后图片展示
 				<canvas id="outputCanvas" width="144">你的浏览器居然不支持Canvas？！赶快换一个吧！！</canvas>
 				<span>文件大小为:{{filesize}}/Kbit</span>
 				<hr width="100%">
-				上传成功后，是否开始绘制
+				<span style="color: red;">当前作画方向：{{!Stick.isRote?Stick.sweep_method[0]:Stick.sweep_method[1]}}</span>
 				<div class="button" @click="draw">开始</div>
 			</div>
 			<div class="types">

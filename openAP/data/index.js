@@ -23,23 +23,25 @@ var app = new Vue({
 				v: 'f3',
 			},
 			f4: {
-				t: '绘光魔法',
-				v: 'f4'
+				t: '绘光魔法'
 			}
 		},
 		Stick: {
 			Status: 0,
+			isRote:false,//默认从上往下
 			Map: {
 				0: "文件传输中",
 				1: "文件传输失败",
 				2: "文件传输成功"
-			}
+			},
+			sweep_method:["从上往下","从左往右"]
 		},
 		filesize: 0,
 		checked: 'f1',
 		showModal: false, // 控制弹窗的显示和隐藏
 		msg: '',
 		B: 120,
+		MaxData:144,//最大宽或高
 		INTER: [] //定时器id
 	},
 	methods: {
@@ -106,6 +108,13 @@ var app = new Vue({
 		},
 		// 启动单片机绘制图案
 		draw: function() {
+			// 画之前校验大小
+			const canvas = document.getElementById('outputCanvas');
+			var msg = this.Stick.isRote?this.Stick.sweep_method[0]:this.Stick.sweep_method[1]
+			if(canvas.width>this.MaxData){
+				alert("当前图片为"+msg)
+				return;
+			}
 			msg = '开始绘制'
 			axios.get("/draw")
 		},
@@ -161,13 +170,21 @@ var app = new Vue({
 				img.onload = function() {
 					const canvas = document.getElementById('outputCanvas');
 					var ctx = canvas.getContext('2d')
-					const newWidth = 144;
-					const scaleFactor = newWidth / img.width;
-					const newHeight = img.height * scaleFactor;
-					canvas.width = newWidth;
-					canvas.height = newHeight;
-					alert("图片高度为" + newHeight)
-					ctx.drawImage(img, 0, 0, newWidth, newHeight);
+					const scaleFactor = img.width / img.height;
+					if(app.$data.Stick.isRote){
+						// 将图像旋转，然后在进行resize
+						canvas.height = app.$data.MaxData*scaleFactor;
+						canvas.width = app.$data.MaxData;
+						ctx.translate(canvas.width / 2, canvas.height / 2);
+						ctx.rotate(Math.PI / 2); // 旋转 90 度
+						ctx.drawImage(img, -canvas.height / 2, -canvas.width / 2, canvas.height, canvas.width);
+						ctx.setTransform(1, 0, 0, 1, 0, 0);
+					}else{
+						canvas.width = app.$data.MaxData;
+						canvas.height = app.$data.MaxData/scaleFactor;
+						ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+					}
+					console.log("width:"+canvas.width+";height:"+canvas.height);
 					const dataform = new FormData();
 					CanvasToBMP.toBlob(canvas, function(blob) {
 						app.$data.filesize = (blob.size / 1024 / 8).toFixed(3);
