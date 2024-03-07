@@ -5,8 +5,8 @@
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 #include <NeoPixelAnimator.h>
-// #include <NeoPixelBus.h>
-#include <NeoPixelBusLg.h>
+#include <NeoPixelBus.h>
+// #include <NeoPixelBusLg.h>
 // 动画曲线
 // AnimEaseFunction moveEase =
 //      NeoEase::Linear;
@@ -39,8 +39,8 @@ String ImgPath = "/verisign.bmp";
 const uint16_t PixelCount = 144; 
 uint16_t animState=0;
 uint8_t Brightness=15*3; //设置一个默认全局亮度
-// NeoPixelBus<NeoGrbFeature, NeoWs2812xMethod> strip(PixelCount);
-NeoPixelBusLg<NeoGrbFeature, NeoWs2812xMethod> strip(PixelCount);
+NeoPixelBus<NeoGrbFeature, NeoWs2812xMethod> strip(PixelCount);
+// NeoPixelBusLg<NeoGrbFeature, NeoWs2812xMethod> strip(PixelCount);
 /**
  * @brief 
  * 这将初始化 NeoBitmapFile 以使用给定的文件。它将检查文件的内容中是否有有效的图像，并配置自身以从文件中读取数据。
@@ -52,7 +52,13 @@ NeoBitmapFile<NeoGrbFeature, File> image;
 void set_Brightness(String brightness){
     // // 设置颜色
     uint8_t b = brightness.toInt();
-    strip.SetLuminance(b);
+    uint8_t c = b % 15;
+    if(c != 0){
+        b -= c;
+    }
+    if(b>0||b<256){
+        Brightness = b;
+    }
 }
 bool LEDdriveInit(){
     // 读取配置，进行初始化设置
