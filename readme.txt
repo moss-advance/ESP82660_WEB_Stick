@@ -1,1 +1,0 @@
-把两个文件放到NeoPixelBus源程序中的\NeoPixelBus\src\internal\buffers目录下即可
