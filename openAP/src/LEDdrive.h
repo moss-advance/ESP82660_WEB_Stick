@@ -5,7 +5,8 @@
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 #include <NeoPixelAnimator.h>
-#include <NeoPixelBus.h>
+// #include <NeoPixelBus.h>
+#include <NeoPixelBusLg.h>
 // 动画曲线
 // AnimEaseFunction moveEase =
 //      NeoEase::Linear;
@@ -33,12 +34,13 @@ struct GlowStickStatus {
 };
 // 全局的光辉棒状态
 GlowStickStatus glowStickStatus;
-
+String JsonPath = "/index.json";
+String ImgPath = "/verisign.bmp";
 const uint16_t PixelCount = 144; 
-uint16_t animState=1;//保存draw当前行数
-uint8_t Brightness = 120; //设置一个默认全局亮度
-NeoPixelBus<NeoGrbFeature, NeoWs2812xMethod> strip(PixelCount);
-
+uint16_t animState=0;
+uint8_t Brightness=15*3; //设置一个默认全局亮度
+// NeoPixelBus<NeoGrbFeature, NeoWs2812xMethod> strip(PixelCount);
+NeoPixelBusLg<NeoGrbFeature, NeoWs2812xMethod> strip(PixelCount);
 /**
  * @brief 
  * 这将初始化 NeoBitmapFile 以使用给定的文件。它将检查文件的内容中是否有有效的图像，并配置自身以从文件中读取数据。
@@ -47,7 +49,23 @@ NeoPixelBus<NeoGrbFeature, NeoWs2812xMethod> strip(PixelCount);
  * 
  */
 NeoBitmapFile<NeoGrbFeature, File> image;
-
+void set_Brightness(String brightness){
+    // // 设置颜色
+    uint8_t b = brightness.toInt();
+    strip.SetLuminance(b);
+}
+bool LEDdriveInit(){
+    // 读取配置，进行初始化设置
+    File config = LittleFS.open(JsonPath, "r");
+    if (!config) {
+        Serial.println("Failed to open file for writing");
+        return false;
+    }
+    JsonDocument doc;
+    deserializeJson(doc,config.readString());
+    set_Brightness(doc["B"].as<String>());
+    return true;
+}
 NeoPixelAnimator animations(4);
 // 转换 GlowStickStatus 结构体为 JSON 字符串
 String toJson(GlowStickStatus& status) {
@@ -62,15 +80,7 @@ String toJson(GlowStickStatus& status) {
 String getStickStatus(){
     return toJson(glowStickStatus);
 }
-void set_Brightness(String brightness){
-    // 设置颜色
-    uint8_t b = brightness.toInt();
-    if(b>255 || b <0){
-        Serial.println("brightness no range");
-    }else{
-        Brightness = b;
-    } 
-}
+
 // 亮度加工厂。ColorBrignessFactory
 RgbColor CBF(RgbColor color){
     // 将源color进行加权处理亮度
@@ -82,14 +92,14 @@ RgbColor CBF(RgbColor color){
 }
 // 颜色转换工具
 RgbColor hexToRgbColor(String hex) {
-    if(hex.length() != 7){
-        Serial.println("hex length err");
-        return RgbColor(0, 0, 0);
-    }
+    
     if (hex.startsWith("#")) {
         hex = hex.substring(1);
     }
-
+    if(hex.length() != 6){
+        Serial.println("hex length err");
+        return RgbColor(0, 0, 0);
+    }
     // 将十六进制颜色代码转换为十进制数值
     long number = strtol(hex.c_str(), NULL, 16);
 
@@ -162,7 +172,7 @@ bool fashe(String hexColor){
 
 bool draw() {
     animations.StopAll();
-    File bmp = LittleFS.open("verisign.bmp","r");
+    File bmp = LittleFS.open(ImgPath,"r");
     Serial.println("Image loading...");
     glowStickStatus.currentStatus = glowStickStatus.FILE_PARSE_IN_PROGRESS;
    if(!image.Begin(bmp)){
@@ -172,30 +182,31 @@ bool draw() {
    }
     glowStickStatus.currentStatus = glowStickStatus.DISPLAY_IN_PROGRESS;
     Serial.println("Image loaded successfully");
-    uint16_t interval = 30;
+    Serial.printf("Brightness=%d\n",Brightness);
+    uint16_t interval = 50;
     animations.StartAnimation(3,interval,[&](const AnimationParam& param){
         if (param.state == AnimationState_Completed){
             strip.ClearTo(RgbColor(0,0,0));
             Serial.printf("animState=%d\n",animState);
-            image.Blt(strip,0,0,animState,image.Width());
+            
             if (animState <= image.Height())
             {
-                // draw the complete row at animState to the complete strip
-                image.Blt(strip, 0, 0, animState, image.Width());
+                image.MyBlt(strip,0,0,animState,image.Width(),Brightness);
+                // image.Blt(strip,0,0,animState,image.Width());
                 animState++; // increment and wrap
                 strip.Show();
                 animations.RestartAnimation(param.index);
             }else{
                 glowStickStatus.currentStatus = glowStickStatus.DISPLAY_COMPLETED;
                 animState=1;
-                fashe("0xff0000");
+                fashe("ff0000");
             }
         }        
     });
     return true;
 }
 bool saveConfig(String JsonString) {
-    File config = LittleFS.open("/index.json", "w");
+    File config = LittleFS.open(JsonPath, "w");
     if (!config) {
         Serial.println("Failed to open file for writing");
         return false;
@@ -210,7 +221,7 @@ bool saveImg(AsyncWebServerRequest *request, String filename, size_t index, uint
     // 只在 index 为 0 时创建文件
     File img;
     if (!index) {
-         img = LittleFS.open("/verisign.bmp", "w");
+         img = LittleFS.open(ImgPath, "w");
         glowStickStatus.currentStatus = glowStickStatus.FILE_TRANSFER_IN_PROGRESS;
         if (!img) {
             Serial.println("Failed to open file for writing");
