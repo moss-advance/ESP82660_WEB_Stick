@@ -11,3 +11,5 @@ NeoPixelBus的色彩校正，响应速度非常快。
 律动
 子弹
 绘光
+# 演示如下
+<iframe src="//player.bilibili.com/player.html?aid=1751611188&bvid=BV1nx42117P6&cid=1466808565&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
